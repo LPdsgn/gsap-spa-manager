@@ -1,0 +1,193 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="GSAP SPA Manager - Demo">
+	<main class="container mx-auto px-4 py-8">
+		<h1 class="text-4xl font-bold text-white mb-8 text-center">
+			GSAP SPA Manager Demo
+		</h1>
+
+		<!-- Hero Animation -->
+		<section id="hero" class="mb-16">
+			<h2 class="text-2xl text-white mb-4">1. Basic Animation</h2>
+			<div class="flex gap-4 flex-wrap">
+				<div
+					class="box bg-purple-600 w-24 h-24 rounded-lg flex items-center justify-center text-white font-bold">
+					1
+				</div>
+				<div
+					class="box bg-blue-600 w-24 h-24 rounded-lg flex items-center justify-center text-white font-bold">
+					2
+				</div>
+				<div
+					class="box bg-green-600 w-24 h-24 rounded-lg flex items-center justify-center text-white font-bold">
+					3
+				</div>
+			</div>
+		</section>
+
+		<!-- ScrollTrigger Demo -->
+		<section id="scroll-section" class="mb-16 min-h-[150vh]">
+			<h2 class="text-2xl text-white mb-4">2. ScrollTrigger Animation</h2>
+			<p class="text-gray-400 mb-8">Scroll down to see the animation</p>
+			<div class="flex flex-col gap-8">
+				{
+					[1, 2, 3, 4, 5].map((i) => (
+						<div
+							class={`scroll-box bg-gradient-to-r ${
+								i % 2 === 0
+									? "from-pink-500 to-purple-500"
+									: "from-cyan-500 to-blue-500"
+							} w-full h-32 rounded-xl flex items-center justify-center text-white text-2xl font-bold opacity-0 translate-x-[-100px]`}>
+							Scroll Item {i}
+						</div>
+					))
+				}
+			</div>
+		</section>
+
+		<!-- Persistent Animation -->
+		<section id="persistent" class="mb-16">
+			<h2 class="text-2xl text-white mb-4">3. Persistent Animation</h2>
+			<p class="text-gray-400 mb-4">
+				This animation survives page transitions (if SPA adapter is used)
+			</p>
+			<div
+				id="persistent-box"
+				class="bg-yellow-500 w-32 h-32 rounded-full mx-auto">
+			</div>
+		</section>
+
+		<!-- Status Panel -->
+		<section
+			id="status"
+			class="fixed bottom-4 right-4 bg-gray-800 p-4 rounded-lg text-white text-sm max-w-xs">
+			<h3 class="font-bold mb-2">Animation Manager Status</h3>
+			<pre
+				id="status-output"
+				class="text-xs text-gray-300 whitespace-pre-wrap">
+			</pre>
+			<div class="mt-2 flex gap-2 flex-wrap">
+				<button
+					id="btn-cleanup"
+					class="px-2 py-1 bg-red-600 rounded text-xs hover:bg-red-700">
+					Cleanup All
+				</button>
+				<button
+					id="btn-refresh"
+					class="px-2 py-1 bg-blue-600 rounded text-xs hover:bg-blue-700">
+					Refresh ST
+				</button>
+				<button
+					id="btn-debug"
+					class="px-2 py-1 bg-green-600 rounded text-xs hover:bg-green-700">
+					Debug
+				</button>
+			</div>
+		</section>
+	</main>
+</Layout>
+
+<script>
+	import { gsap } from "gsap";
+	import { AM } from "gsap-spa-manager";
+
+	// Initialize with debug mode
+	AM.init({ debug: true });
+
+	// Update status panel
+	function updateStatus() {
+		const status = AM.getStatus();
+		const output = document.getElementById("status-output");
+		if (output) {
+			output.textContent = JSON.stringify(status, null, 2);
+		}
+	}
+
+	// 1. Basic Animation with setup()
+	AM.setup("hero-boxes", (ctx: gsap.Context) => {
+		gsap.from(".box", {
+			y: 50,
+			opacity: 0,
+			stagger: 0.2,
+			duration: 0.8,
+			ease: "back.out(1.7)",
+		});
+	});
+
+	// 2. ScrollTrigger Animation
+	AM.setup("scroll-animations", () => {
+		const boxes = document.querySelectorAll(".scroll-box");
+		boxes.forEach((box, i) => {
+			const trigger = AM.scroll(`scroll-box-${i}`, {
+				trigger: box,
+				start: "top 80%",
+				end: "top 30%",
+				toggleActions: "play none none reverse",
+				onEnter: () => {
+					gsap.to(box, {
+						opacity: 1,
+						x: 0,
+						duration: 0.6,
+						ease: "power2.out",
+					});
+				},
+				onLeaveBack: () => {
+					gsap.to(box, {
+						opacity: 0,
+						x: -100,
+						duration: 0.4,
+					});
+				},
+			});
+		});
+	});
+
+	// 3. Persistent Animation (survives cleanup)
+	AM.setup(
+		"persistent-pulse",
+		() => {
+			gsap.to("#persistent-box", {
+				scale: 1.2,
+				duration: 0.8,
+				repeat: -1,
+				yoyo: true,
+				ease: "power1.inOut",
+			});
+		},
+		{ persist: true }
+	);
+
+	// Button handlers
+	document.getElementById("btn-cleanup")?.addEventListener("click", () => {
+		AM.cleanupAll();
+		updateStatus();
+	});
+
+	document.getElementById("btn-refresh")?.addEventListener("click", () => {
+		AM.refresh();
+		updateStatus();
+	});
+
+	document.getElementById("btn-debug")?.addEventListener("click", () => {
+		AM.debug();
+		updateStatus();
+	});
+
+	// Initial status update
+	updateStatus();
+
+	// Update status on scroll
+	let scrollTimeout: ReturnType<typeof setTimeout>;
+	window.addEventListener("scroll", () => {
+		clearTimeout(scrollTimeout);
+		scrollTimeout = setTimeout(updateStatus, 100);
+	});
+</script>
+
+<style>
+	.container {
+		max-width: 1200px;
+	}
+</style>
