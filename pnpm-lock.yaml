@@ -24,7 +24,7 @@ importers:
         specifier: ^22.0.0
         version: 22.19.5
       gsap:
-        specifier: ^3.12.0
+        specifier: ^3.14.2
         version: 3.14.2
       swup:
         specifier: ^4.0.0
