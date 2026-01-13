@@ -4,13 +4,13 @@ A framework-agnostic GSAP animation manager for Single Page Applications with au
 
 ## Features
 
-- 🎯 **Framework Agnostic** - Works with any SPA framework (Swup, Barba.js, custom routers, or standalone)
-- 🧹 **Automatic Cleanup** - Animations are automatically killed on page transitions
-- 💾 **Persistence Support** - Mark animations as persistent to survive page transitions
-- 📜 **ScrollTrigger Management** - Centralized ScrollTrigger registration and cleanup
-- 🔧 **Context Management** - Uses `gsap.context()` for proper cleanup of side-effects
-- 📦 **Multiple Formats** - ESM, CJS, and UMD builds available
-- 🔍 **Debug Mode** - Comprehensive logging for development
+- **Framework Agnostic** - Works with Swup, Barba.js, Astro View Transitions, or standalone
+- **Automatic Cleanup** - Animations are automatically killed on page transitions
+- **Persistence Support** - Mark animations as persistent to survive page transitions
+- **ScrollTrigger Management** - Centralized ScrollTrigger registration and cleanup
+- **Context Management** - Uses `gsap.context()` for proper cleanup of side-effects
+- **Multiple Formats** - ESM, CJS, and UMD builds available
+- **Debug Mode** - Comprehensive logging for development
 
 ## Installation
 
@@ -44,7 +44,7 @@ tl.from('.title', { opacity: 0 })
 // Use setup for complex animations with cleanup
 AM.setup('mySection', (ctx) => {
   gsap.to('.box', { rotation: 360, repeat: -1 });
-  
+
   // Register side-effects with automatic cleanup
   const onClick = () => console.log('clicked');
   document.addEventListener('click', onClick);
@@ -59,15 +59,15 @@ AM.cleanup('hero');
 
 ```typescript
 import Swup from 'swup';
-import { AM, createSwupAdapter } from 'gsap-spa-manager';
+import { AM, swupAdapter } from 'gsap-spa-manager';
 
 const swup = new Swup();
-AM.init({ 
+AM.init({
   debug: true,
-  adapter: createSwupAdapter(swup) 
+  adapter: swupAdapter(swup)
 });
 
-// Animations will now automatically cleanup on page transitions!
+// Animations will now automatically cleanup on page transitions
 AM.setup('pageAnimations', () => {
   gsap.from('.content', { opacity: 0 });
 });
@@ -77,23 +77,40 @@ AM.setup('pageAnimations', () => {
 
 ```typescript
 import barba from '@barba/core';
-import { AM, createBarbaAdapter } from 'gsap-spa-manager';
+import { AM, barbaAdapter } from 'gsap-spa-manager';
 
 barba.init();
-AM.init({ 
+AM.init({
   debug: true,
-  adapter: createBarbaAdapter(barba) 
+  adapter: barbaAdapter(barba)
+});
+```
+
+### With Astro View Transitions
+
+```typescript
+import { AM, astroAdapter } from 'gsap-spa-manager';
+
+// Astro adapter uses native DOM events, no router instance needed
+AM.init({
+  debug: true,
+  adapter: astroAdapter()
+});
+
+// Optional: add delay before ScrollTrigger refresh
+AM.init({
+  adapter: astroAdapter({ refreshDelay: 100 })
 });
 ```
 
 ### UMD (Browser Global)
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap/ScrollTrigger"></script>
 <script src="https://unpkg.com/gsap-spa-manager/dist/index.umd.js"></script>
 <script>
-  const { AM } = GSAPSPAManager;
+  const { AM } = AnimationManager;
   AM.init({ debug: true });
   AM.animate('box', gsap.to('.box', { x: 100 }));
 </script>
@@ -112,15 +129,29 @@ AM.init({
 });
 ```
 
+### `AM.destroy()`
+
+Disconnect the adapter and force cleanup all animations.
+
+```typescript
+AM.destroy();
+```
+
 ### `AM.animate(key, animation, options?)`
 
 Register a GSAP animation (Tween or Timeline).
 
 ```typescript
+// Single animation
 AM.animate('myAnimation', gsap.to('.el', { x: 100 }));
-AM.animate('myAnimation', gsap.timeline().to('.el', { x: 100 }));
 
-// With persistence
+// Multiple animations under one key
+AM.animate('myAnimations', [
+  gsap.to('.el1', { x: 100 }),
+  gsap.to('.el2', { y: 50 })
+]);
+
+// With persistence (survives page transitions)
 AM.animate('persistent', gsap.to('.el', { x: 100 }), { persist: true });
 ```
 
@@ -130,7 +161,11 @@ Create and register a GSAP Timeline.
 
 ```typescript
 const tl = AM.timeline('myTimeline', { paused: true });
-tl.to('.el', { x: 100 });
+tl.to('.el', { x: 100 })
+  .to('.el', { y: 50 });
+
+// Persistent timeline
+const persistentTl = AM.timeline('navbar', { paused: true }, { persist: true });
 ```
 
 ### `AM.setup(key, setupFn, options?)`
@@ -141,16 +176,17 @@ Execute a setup function within a `gsap.context()` for proper cleanup.
 AM.setup('mySetup', (ctx) => {
   // All GSAP animations here are tracked
   gsap.to('.el', { x: 100 });
-  
-  // Register non-GSAP side-effects
+  gsap.from('.other', { opacity: 0 });
+
+  // Register non-GSAP side-effects for automatic cleanup
   ctx?.add(() => {
     const handler = () => {};
     window.addEventListener('resize', handler);
     return () => window.removeEventListener('resize', handler);
   });
-}, { 
+}, {
   persist: true,           // Survive cleanup
-  scope: document.body     // Scope for selectors
+  scope: document.body     // Scope for GSAP selectors
 });
 ```
 
@@ -166,6 +202,35 @@ AM.scroll('myTrigger', {
   scrub: true,
   animation: gsap.to('.el', { x: 100 })
 });
+
+// Persistent ScrollTrigger
+AM.scroll('navTrigger', {
+  trigger: '.header',
+  start: 'top top',
+  pin: true
+}, { persist: true });
+```
+
+### `AM.register(key, animation, options?)`
+
+Register an externally created animation. Useful when you need more control over animation creation.
+
+```typescript
+const myTween = gsap.to('.el', { x: 100, paused: true });
+AM.register('myTween', myTween);
+
+// Register multiple animations
+AM.register('batch', [tween1, tween2, timeline1]);
+```
+
+### `AM.registerScrollTriggers(key, triggers, options?)`
+
+Register externally created ScrollTriggers.
+
+```typescript
+const st1 = ScrollTrigger.create({ trigger: '.a', ... });
+const st2 = ScrollTrigger.create({ trigger: '.b', ... });
+AM.registerScrollTriggers('myTriggers', [st1, st2]);
 ```
 
 ### `AM.cleanup(key, force?)`
@@ -181,18 +246,34 @@ AM.cleanup('persistentAnim', true); // Force cleanup even if persistent
 
 Cleanup all non-persistent animations.
 
+```typescript
+AM.cleanupAll();
+```
+
 ### `AM.forceCleanupAll()`
 
 Cleanup everything, including persistent animations.
+
+```typescript
+AM.forceCleanupAll();
+```
 
 ### `AM.refresh(keys?)`
 
 Refresh ScrollTriggers.
 
 ```typescript
-AM.refresh();           // Refresh all
-AM.refresh('myTrigger'); // Refresh specific
-AM.refresh(['a', 'b']); // Refresh multiple
+AM.refresh();              // Refresh all
+AM.refresh('myTrigger');   // Refresh specific
+AM.refresh(['a', 'b']);    // Refresh multiple
+```
+
+### `AM.removePersistence(key)`
+
+Remove persistence from an animation, making it eligible for cleanup.
+
+```typescript
+AM.removePersistence('myAnimation');
 ```
 
 ### `AM.getStatus()`
@@ -201,16 +282,42 @@ Get current manager status.
 
 ```typescript
 const status = AM.getStatus();
-// { animations: 5, scrollTriggers: 3, persistent: 2, keys: [...], persistentKeys: [...] }
+// {
+//   animations: 5,
+//   scrollTriggers: 3,
+//   persistent: 2,
+//   keys: ['hero', 'intro', ...],
+//   persistentKeys: ['navbar', 'footer']
+// }
 ```
 
 ### `AM.isActive(key)`
 
 Check if an animation/setup is active.
 
+```typescript
+if (AM.isActive('hero')) {
+  // Animation exists
+}
+```
+
 ### `AM.isPersistent(key)`
 
 Check if an animation is marked as persistent.
+
+```typescript
+if (AM.isPersistent('navbar')) {
+  // Won't be cleaned up on page transitions
+}
+```
+
+### `AM.debug()`
+
+Show detailed debug information in the console (only works if debug mode is enabled).
+
+```typescript
+AM.debug();
+```
 
 ## Creating Custom Adapters
 
@@ -221,11 +328,21 @@ import type { SPAAdapter } from 'gsap-spa-manager';
 
 const myAdapter: SPAAdapter = {
   name: 'MyRouter',
+
   onBeforeSwap(callback) {
+    // Called before page content is replaced
     myRouter.on('before:navigate', callback);
   },
+
   onAfterSwap(callback) {
+    // Called after page content is replaced
     myRouter.on('after:navigate', callback);
+  },
+
+  destroy() {
+    // Optional: cleanup when AM.destroy() is called
+    myRouter.off('before:navigate');
+    myRouter.off('after:navigate');
   }
 };
 
@@ -234,28 +351,35 @@ AM.init({ adapter: myAdapter });
 
 ## Best Practices
 
-1. **Use `setup()` for complex animations** - It provides automatic cleanup via `gsap.context()`
+1. **Use `setup()` for complex animations** - It provides automatic cleanup via `gsap.context()` and is ideal when you have multiple related animations and side-effects.
 
-2. **Register all ScrollTriggers** - Use `AM.scroll()` instead of `ScrollTrigger.create()` directly
+2. **Register all ScrollTriggers** - Use `AM.scroll()` instead of `ScrollTrigger.create()` directly to ensure proper cleanup on page transitions.
 
-3. **Use persistence sparingly** - Only for animations that truly need to survive page transitions
+3. **Use persistence sparingly** - Only for animations that truly need to survive page transitions (e.g., navbar, persistent UI elements).
 
-4. **Clean up manually when needed** - Call `AM.cleanup(key)` when removing elements dynamically
+4. **Clean up manually when needed** - Call `AM.cleanup(key)` when removing elements dynamically, not just on page transitions.
 
-5. **Use debug mode during development** - It helps track animation lifecycle
+5. **Use debug mode during development** - It helps track animation lifecycle and identify cleanup issues.
+
+6. **Use unique keys** - Keys are used to track and cleanup animations. Reusing keys will skip registration (useful for preventing duplicates).
 
 ## TypeScript Support
 
 Full TypeScript support with exported types:
 
 ```typescript
-import type { 
-  SPAAdapter, 
+import type {
+  SPAAdapter,
   AnimationManagerOptions,
   AnimationOptions,
-  SetupOptions 
+  SetupOptions,
+  AstroAdapterOptions
 } from 'gsap-spa-manager';
 ```
+
+## Browser Support
+
+The UMD build exposes `AnimationManager` globally. The singleton instance `AM` is also available on `window.AM` for debugging in browser DevTools.
 
 ## License
 
