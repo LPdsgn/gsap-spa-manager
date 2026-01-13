@@ -1,5 +1,5 @@
 {
-	"name": "gsap-spa-manager",
+	"name": "@lpdsgn/gsap-spa-manager",
 	"version": "0.1.0",
 	"description": "Framework-agnostic GSAP animation manager for SPAs with automatic cleanup, persistence, and ScrollTrigger support",
 	"type": "module",
@@ -50,10 +50,10 @@
 	"author": "",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/YOUR_USERNAME/gsap-spa-manager.git"
+		"url": "git+https://github.com/LPdsgn/gsap-spa-manager.git"
 	},
-	"bugs": "https://github.com/YOUR_USERNAME/gsap-spa-manager/issues",
-	"homepage": "https://github.com/YOUR_USERNAME/gsap-spa-manager#readme",
+	"bugs": "https://github.com/LPdsgn/gsap-spa-manager/issues",
+	"homepage": "https://github.com/LPdsgn/gsap-spa-manager#readme",
 	"license": "MIT",
 	"peerDependencies": {
 		"gsap": "^3.14.2"
