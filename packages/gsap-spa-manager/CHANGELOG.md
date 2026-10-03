@@ -1,5 +1,11 @@
 # @lpdsgn/gsap-spa-manager
 
+## 1.0.0
+
+### Major Changes
+
+- [`eade479`](https://github.com/LPdsgn/gsap-spa-manager/commit/eade4798b3fee1b748836e2e3097c5ab1835bc76) Thanks [@LPdsgn](https://github.com/LPdsgn)! - First stable release. Fix package entry points: the build emitted `index.esm.js`/`index.cjs.js` while `exports` pointed to `index.js`/`index.cjs`, so the package could not be imported from Node, esbuild or Vite. CommonJS consumers now also get `index.d.cts` types.
+
 ## 0.1.1
 
 ### Patch Changes
