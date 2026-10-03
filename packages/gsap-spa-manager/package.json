@@ -1,6 +1,6 @@
 {
 	"name": "@lpdsgn/gsap-spa-manager",
-	"version": "0.1.1",
+	"version": "1.0.0",
 	"description": "Framework-agnostic GSAP animation manager for SPAs with automatic cleanup, persistence, and ScrollTrigger support",
 	"type": "module",
 	"exports": {
