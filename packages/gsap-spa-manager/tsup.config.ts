@@ -8,7 +8,6 @@ export default defineConfig((options) => {
 		{
 			entry: ['src/index.ts'],
 			format: ['esm', 'cjs'],
-			outExtension: ({ format }) => ({ js: `.${format}.js` }),
 			target: 'es2020',
 			bundle: true,
 			dts: true,
