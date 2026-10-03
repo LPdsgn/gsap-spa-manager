@@ -7,16 +7,16 @@ import type { SPAAdapter } from '../AnimationManager.js';
  * quindi questo adapter non richiede parametri.
  *
  * @example
- * import { AM, createAstroAdapter } from 'gsap-spa-manager';
+ * import { AM, astroAdapter } from '@lpdsgn/gsap-spa-manager';
  *
  * // In un <script> tag o client-side script
- * AM.init({ adapter: createAstroAdapter() });
+ * AM.init({ adapter: astroAdapter() });
  *
  * @example
  * // Con opzioni
  * AM.init({
  *   debug: true,
- *   adapter: createAstroAdapter({ refreshDelay: 100 })
+ *   adapter: astroAdapter({ refreshDelay: 100 })
  * });
  *
  * @see https://docs.astro.build/en/guides/view-transitions/

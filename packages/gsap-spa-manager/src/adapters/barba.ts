@@ -14,10 +14,10 @@ interface BarbaCore {
  *
  * @example
  * import barba from '@barba/core';
- * import { AM, createBarbaAdapter } from 'gsap-spa-manager';
+ * import { AM, barbaAdapter } from '@lpdsgn/gsap-spa-manager';
  *
  * barba.init();
- * AM.init({ adapter: createBarbaAdapter(barba) });
+ * AM.init({ adapter: barbaAdapter(barba) });
  *
  * @note Barba.js non supporta la rimozione dinamica degli hooks,
  * quindi destroy() non rimuove i listener ma previene l'esecuzione

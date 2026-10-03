@@ -27,7 +27,7 @@ yarn add gsap-spa-manager gsap
 ### Standalone Usage (No SPA Router)
 
 ```typescript
-import { AM } from 'gsap-spa-manager';
+import { AM } from '@lpdsgn/gsap-spa-manager';
 import { gsap } from 'gsap';
 
 // Initialize (optional, enables debug mode)
@@ -59,7 +59,7 @@ AM.cleanup('hero');
 
 ```typescript
 import Swup from 'swup';
-import { AM, swupAdapter } from 'gsap-spa-manager';
+import { AM, swupAdapter } from '@lpdsgn/gsap-spa-manager';
 
 const swup = new Swup();
 AM.init({
@@ -77,7 +77,7 @@ AM.setup('pageAnimations', () => {
 
 ```typescript
 import barba from '@barba/core';
-import { AM, barbaAdapter } from 'gsap-spa-manager';
+import { AM, barbaAdapter } from '@lpdsgn/gsap-spa-manager';
 
 barba.init();
 AM.init({
@@ -89,7 +89,7 @@ AM.init({
 ### With Astro View Transitions
 
 ```typescript
-import { AM, astroAdapter } from 'gsap-spa-manager';
+import { AM, astroAdapter } from '@lpdsgn/gsap-spa-manager';
 
 // Astro adapter uses native DOM events, no router instance needed
 AM.init({
@@ -124,7 +124,7 @@ Initialize the Animation Manager.
 
 ```typescript
 AM.init({
-  debug: boolean,      // Enable debug logging (default: false)
+  debug: boolean,      // Enable debug logging and window.AM (default: false)
   adapter: SPAAdapter  // Optional SPA adapter for automatic cleanup
 });
 ```
@@ -324,7 +324,7 @@ AM.debug();
 You can create adapters for any SPA router:
 
 ```typescript
-import type { SPAAdapter } from 'gsap-spa-manager';
+import type { SPAAdapter } from '@lpdsgn/gsap-spa-manager';
 
 const myAdapter: SPAAdapter = {
   name: 'MyRouter',
@@ -374,12 +374,12 @@ import type {
   AnimationOptions,
   SetupOptions,
   AstroAdapterOptions
-} from 'gsap-spa-manager';
+} from '@lpdsgn/gsap-spa-manager';
 ```
 
 ## Browser Support
 
-The UMD build exposes `AnimationManager` globally. The singleton instance `AM` is also available on `window.AM` for debugging in browser DevTools.
+The UMD build exposes `AnimationManager` globally. When initialized with `AM.init({ debug: true })`, the singleton instance `AM` is also available on `window.AM` for debugging in browser DevTools.
 
 ## License
 

@@ -17,7 +17,7 @@ npm install gsap-spa-manager gsap
 ```
 
 ```typescript
-import { AM } from 'gsap-spa-manager';
+import { AM } from '@lpdsgn/gsap-spa-manager';
 import { gsap } from 'gsap';
 
 AM.init({ debug: true });

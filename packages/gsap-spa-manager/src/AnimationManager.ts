@@ -21,7 +21,7 @@ export interface SPAAdapter {
  * Opzioni di configurazione per AnimationManager
  */
 export interface AnimationManagerOptions {
-	/** Abilita logging di debug */
+	/** Abilita logging di debug ed espone l'istanza su `window.AM` */
 	debug?: boolean;
 	/** Adapter SPA opzionale (Swup, Barba.js, etc.) */
 	adapter?: SPAAdapter;
@@ -97,6 +97,11 @@ class AnimationManager {
 		const { debug = false, adapter } = options;
 
 		this.isDebug = debug;
+
+		// Esponi globalmente per i DevTools solo in debug (e solo se window esiste)
+		if (debug && typeof window !== 'undefined') {
+			(window as Window & { AM?: AnimationManager }).AM = this;
+		}
 
 		if (adapter) {
 			if (this.adapter) {
@@ -682,8 +687,3 @@ export const AM = AnimationManager.getInstance();
 
 // Esporta anche la classe per chi vuole estenderla
 export { AnimationManager };
-
-// Esponi globalmente in ambiente browser per debug (solo se window esiste)
-if (typeof window !== 'undefined') {
-	(window as Window & { AM?: AnimationManager }).AM = AM;
-}

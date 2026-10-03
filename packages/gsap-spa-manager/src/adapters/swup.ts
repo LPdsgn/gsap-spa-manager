@@ -6,10 +6,10 @@ import type { SPAAdapter } from '../AnimationManager.js';
  *
  * @example
  * import Swup from 'swup';
- * import { AM, createSwupAdapter } from 'gsap-spa-manager';
+ * import { AM, swupAdapter } from '@lpdsgn/gsap-spa-manager';
  *
  * const swup = new Swup();
- * AM.init({ adapter: createSwupAdapter(swup) });
+ * AM.init({ adapter: swupAdapter(swup) });
  *
  * // Per disconnettere l'adapter:
  * AM.destroy();
