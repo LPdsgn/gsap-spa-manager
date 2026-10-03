@@ -248,13 +248,13 @@ class AnimationManager {
 	 * @example
 	 * AM.setup('globalEffects', (ctx) => {
 	 *   gsap.to('.el', { opacity: 1 })
-	 *   ctx?.add(() => {
+	 *   ctx.add(() => {
 	 *     window.addEventListener('scroll', onScroll)
 	 *     return () => window.removeEventListener('scroll', onScroll)
 	 *   })
 	 * }, { persist: true, scope: document.body })
 	 */
-	setup(key: string, setupFunction: (ctx?: gsap.Context) => void, options?: SetupOptions): void {
+	setup(key: string, setupFunction: (ctx: gsap.Context) => void, options?: SetupOptions): void {
 		if (!this.activeAnimations.has(key) && !this.contexts.has(key)) {
 			const ctx = gsap.context((self: gsap.Context) => {
 				setupFunction(self);

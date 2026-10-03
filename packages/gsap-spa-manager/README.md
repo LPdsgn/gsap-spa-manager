@@ -48,7 +48,7 @@ AM.setup('mySection', (ctx) => {
   // Register side-effects with automatic cleanup
   const onClick = () => console.log('clicked');
   document.addEventListener('click', onClick);
-  ctx?.add(() => () => document.removeEventListener('click', onClick));
+  ctx.add(() => () => document.removeEventListener('click', onClick));
 });
 
 // Cleanup when done
@@ -179,7 +179,7 @@ AM.setup('mySetup', (ctx) => {
   gsap.from('.other', { opacity: 0 });
 
   // Register non-GSAP side-effects for automatic cleanup
-  ctx?.add(() => {
+  ctx.add(() => {
     const handler = () => {};
     window.addEventListener('resize', handler);
     return () => window.removeEventListener('resize', handler);
