@@ -254,11 +254,7 @@ class AnimationManager {
 	 *   })
 	 * }, { persist: true, scope: document.body })
 	 */
-	setup(
-		key: string,
-		setupFunction: (ctx?: gsap.Context) => void,
-		options?: SetupOptions
-	): void {
+	setup(key: string, setupFunction: (ctx?: gsap.Context) => void, options?: SetupOptions): void {
 		if (!this.activeAnimations.has(key) && !this.contexts.has(key)) {
 			const ctx = gsap.context((self: gsap.Context) => {
 				setupFunction(self);
@@ -286,11 +282,7 @@ class AnimationManager {
 	 * @param options.persist Se true, la timeline è preservata ai cleanup non forzati
 	 * @returns Istanza di Timeline
 	 */
-	timeline(
-		key: string,
-		vars?: gsap.TimelineVars,
-		options?: AnimationOptions
-	): gsap.core.Timeline {
+	timeline(key: string, vars?: gsap.TimelineVars, options?: AnimationOptions): gsap.core.Timeline {
 		return this.animate(key, gsap.timeline(vars), options);
 	}
 
@@ -302,11 +294,7 @@ class AnimationManager {
 	 * @param options.persist Se true, lo ScrollTrigger è preservato ai cleanup non forzati
 	 * @returns L'istanza creata, o null se esiste già per quella chiave
 	 */
-	scroll(
-		key: string,
-		vars: ScrollTrigger.Vars,
-		options?: AnimationOptions
-	): ScrollTrigger | null {
+	scroll(key: string, vars: ScrollTrigger.Vars, options?: AnimationOptions): ScrollTrigger | null {
 		if (this.scrollTriggers.has(key)) {
 			this.log(`⚠️ ScrollTrigger already exists for: ${key} - skipping`);
 			return null;
@@ -346,7 +334,9 @@ class AnimationManager {
 	 */
 	private killScrollTriggers(triggers: ScrollTrigger[]): void {
 		if (!triggers || triggers.length === 0) return;
-		triggers.forEach((trigger) => trigger.kill());
+		triggers.forEach((trigger) => {
+			trigger.kill();
+		});
 	}
 
 	/**
@@ -459,7 +449,9 @@ class AnimationManager {
 			const persistentSet = new Set<ScrollTrigger>();
 			for (const key of this.persistentScrollTriggers) {
 				const triggers = this.scrollTriggers.get(key);
-				triggers?.forEach((t) => persistentSet.add(t));
+				triggers?.forEach((t) => {
+					persistentSet.add(t);
+				});
 			}
 			const toKill: ScrollTrigger[] = [];
 			for (const t of ScrollTrigger.getAll()) {
@@ -482,7 +474,9 @@ class AnimationManager {
 	 * Cleanup forzato: rimuove tutto ignorando la persistenza
 	 */
 	forceCleanupAll(): void {
-		this.contexts.forEach((ctx) => ctx.revert());
+		this.contexts.forEach((ctx) => {
+			ctx.revert();
+		});
 		this.contexts.clear();
 
 		this.activeAnimations.forEach((animations) => {
@@ -540,7 +534,9 @@ class AnimationManager {
 		keysToRefresh.forEach((key) => {
 			const triggers = this.scrollTriggers.get(key);
 			if (triggers) {
-				triggers.forEach((trigger) => trigger.refresh());
+				triggers.forEach((trigger) => {
+					trigger.refresh();
+				});
 				refreshedCount++;
 				this.log(`🔄 ScrollTriggers refreshed for: ${key}`);
 			} else {
@@ -628,14 +624,14 @@ class AnimationManager {
 				this.logTitleStyle,
 				this.logResetStyle
 			);
-			message.forEach((msg) =>
+			message.forEach((msg) => {
 				console.log(
 					`${this.logIcon}${this.logTitle}%c ${msg}`,
 					this.logIconStyle,
 					this.logTitleStyle,
 					this.logResetStyle
-				)
-			);
+				);
+			});
 			console.groupEnd();
 		} else {
 			console.log(

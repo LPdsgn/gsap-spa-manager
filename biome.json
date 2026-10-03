@@ -7,6 +7,16 @@
 			}
 		}
 	},
+	"formatter": {
+		"indentWidth": 3,
+		"lineWidth": 100
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single",
+			"trailingCommas": "es5"
+		}
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
@@ -30,5 +40,18 @@
 	},
 	"files": {
 		"includes": ["**", "!**/dist", "!**/.astro"]
-	}
+	},
+	"overrides": [
+		{
+			"includes": ["**/*.astro"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"noUnusedVariables": "off",
+						"noUnusedImports": "off"
+					}
+				}
+			}
+		}
+	]
 }

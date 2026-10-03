@@ -1,3 +1,3 @@
-export { swupAdapter } from './swup.js';
+export { type AstroAdapterOptions, astroAdapter } from './astro.js';
 export { barbaAdapter } from './barba.js';
-export { astroAdapter, type AstroAdapterOptions } from './astro.js';
+export { swupAdapter } from './swup.js';
