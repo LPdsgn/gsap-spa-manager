@@ -2,9 +2,6 @@
 dist/
 .vercel/
 
-.changeset/*.md
-!.changeset/README.md
-
 # dependencies
 node_modules
 
